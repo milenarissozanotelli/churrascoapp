@@ -41,6 +41,7 @@ export default function App() {
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Cadastro" component={Cadastro} />
           <Stack.Screen name="Sobre Nós" component={Sobre} />
+          <Stack.Screen name="Menu" component={Menu} />
         </Stack.Navigator>
       )}
       <StatusBar style="auto" />
