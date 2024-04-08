@@ -60,15 +60,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 20,
     padding: 10,
+    borderRadius: 5,
   },
   loginbutton: {
+    marginBottom: 20,
 
   },
   cadastroButton: {
-    position: 'absolute',
-    bottom: 50,
-
+    marginTop: 200,
   },
-});
+})
 
 export default Login;
