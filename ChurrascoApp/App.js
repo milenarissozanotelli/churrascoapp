@@ -43,6 +43,7 @@ export default function App() {
           <Stack.Screen name="Sobre Nós" component={Sobre} />
           <Stack.Screen name="Menu" component={Menu} />
           <Stack.Screen name="Informar Pessoas" component={InformarPessoas} />
+          <Stack.Screen name="Listas Salvas" component={ListasSalvas} />
         </Stack.Navigator>
       )}
       <StatusBar style="auto" />
