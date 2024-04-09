@@ -4,7 +4,7 @@ import * as SecureStore from 'expo-secure-store';
 import Login from './views/login';
 import Menu from './views/menu';
 import Cadastro from './views/cadastro';
-import CalculoFinal from './views/calculofinal';
+import Calcular from './views/calculofinal';
 import InformarPessoas from './views/informarpessoas';
 import ListasSalvas from './views/listassalvas';
 import Sobre from './views/sobrenos';
@@ -42,6 +42,7 @@ export default function App() {
           <Stack.Screen name="Cadastro" component={Cadastro} />
           <Stack.Screen name="Sobre Nós" component={Sobre} />
           <Stack.Screen name="Menu" component={Menu} />
+          <Stack.Screen name="Informar Pessoas" component={InformarPessoas} />
         </Stack.Navigator>
       )}
       <StatusBar style="auto" />

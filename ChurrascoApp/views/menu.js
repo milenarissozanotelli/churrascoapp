@@ -12,7 +12,7 @@ const Menu = ({navigation}) => {
                 <Text style = {styles.text}>Escolha o que deseja:</Text>
             </View>
             <View style = {styles.button}>
-                <Button color={'#870517'} title="Calcular" onPress={() => navigation.navigate('Calcular')} />
+                <Button color={'#870517'} title="Calcular" onPress={() => navigation.navigate('Informar Pessoas')} />
             </View>
             <View style = {styles.button}>
                 <Button color={'#870517'} title="Listas Salvas" onPress={() => navigation.navigate('ListasSalvas')} />
