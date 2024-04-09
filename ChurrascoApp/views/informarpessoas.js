@@ -1,7 +1,12 @@
+import { useState } from 'react';
 import {Text, Image, Button, View, StyleSheet, TextInput} from 'react-native';
 
 const InformarPessoas = ({navigation}) => {
     
+    const [homens, setHomens] = useState(0);
+    const [mulheres, setMulheres] = useState(0);
+    const [criancas, setCriancas] = useState(0);
+
     const handleCalcular = () => {
         // Implementar a lógica do cálculo
     }
@@ -11,12 +16,12 @@ const InformarPessoas = ({navigation}) => {
             <Image source={require('../assets/logo.png')} style = {styles.image}></Image>
             <Text style={styles.text}>Informe a quantidade de pessoas para realizar o cálculo:</Text>
             <Text style={styles.label}>Mulheres</Text>
-            <TextInput style ={styles.textinput}></TextInput>
+            <TextInput style ={styles.textinput}  keyboardType="numeric" onChange={setMulheres} value={mulheres}></TextInput>
             <Text style={styles.label}>Homens</Text>
             <TextInput style ={styles.textinput}></TextInput>
             <Text style={styles.label}>Crianças</Text>
             <TextInput style ={styles.textinput}></TextInput>
-            <View style = {styles.cadastroButton}>
+            <View style = {styles.calcularButton}>
                 <Button color={'#870517'} title="Calcular" onPress={handleCalcular} />
             </View>
         </View>
@@ -30,7 +35,8 @@ container: {
   alignItems: 'center',
 },
 text:{
-  fontSize: 25,
+  margin: '5%',
+  fontSize: 20,
   fontWeight: 'bold',
   textAlign: 'center',
 },
@@ -54,7 +60,7 @@ label:{
   marginBottom: 5,
   marginTop: 10,
 },
-cadastroButton:{
+calcularButton:{
   marginTop: 20,
 }
 })
