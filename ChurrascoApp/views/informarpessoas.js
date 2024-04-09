@@ -18,9 +18,9 @@ const InformarPessoas = ({navigation}) => {
             <Text style={styles.label}>Mulheres</Text>
             <TextInput style ={styles.textinput}  keyboardType="numeric" onChange={setMulheres} value={mulheres}></TextInput>
             <Text style={styles.label}>Homens</Text>
-            <TextInput style ={styles.textinput}></TextInput>
+            <TextInput style ={styles.textinput}  keyboardType="numeric" onChange={setHomens} value={homens}></TextInput>
             <Text style={styles.label}>Crianças</Text>
-            <TextInput style ={styles.textinput}></TextInput>
+            <TextInput style ={styles.textinput}  keyboardType="numeric" onChange={setCriancas} value={criancas}></TextInput>
             <View style = {styles.calcularButton}>
                 <Button color={'#870517'} title="Calcular" onPress={handleCalcular} />
             </View>
