@@ -11,7 +11,7 @@ const ListasSalvas = ({ navigation }) => {
 
   // Função para lidar com o clique em um item da lista
   const handleListaPress = (lista) => {
-    // Navegar para a nova tela
+    navigation.navigate("Cálculo Final");
   };
 
   return (

@@ -8,7 +8,7 @@ const InformarPessoas = ({navigation}) => {
     const [criancas, setCriancas] = useState(0);
 
     const handleCalcular = () => {
-        // Implementar a lógica do cálculo
+      navigation.navigate("Cálculo Final");
     }
 
     return (
