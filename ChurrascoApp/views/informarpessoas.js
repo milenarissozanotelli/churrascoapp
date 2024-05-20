@@ -3,9 +3,9 @@ import {Text, Image, Button, View, StyleSheet, TextInput} from 'react-native';
 
 const InformarPessoas = ({navigation}) => {
     
-    const [homens, setHomens] = useState(0);
-    const [mulheres, setMulheres] = useState(0);
-    const [criancas, setCriancas] = useState(0);
+    const [homens, setHomens] = useState('');
+    const [mulheres, setMulheres] = useState('');
+    const [criancas, setCriancas] = useState('');
 
     const handleCalcular = () => {
       navigation.navigate("Cálculo Final");
