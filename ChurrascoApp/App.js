@@ -17,21 +17,39 @@ export default function App() {
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   useEffect(() => {
-    const checkAuthentication = async () => {
+    const authenticateUser = async () => {
       try {
         const storedToken = await SecureStore.getItemAsync('token');
-        setIsAuthenticated(!!storedToken);
-
-        fetch('http://localhost:8081/api/rota')
-          .then(response => response.json())
-          .then(data => console.log(data));
+        if (!storedToken) {
+          const response = await fetch('http://localhost:8081/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username: 'your_username',
+              password: 'your_password',
+            }),
+          });
+  
+          const data = await response.json();
+  
+          if (data.token) {
+            await SecureStore.setItemAsync('token', data.token);
+            setIsAuthenticated(true);
+          } else {
+            console.error('Error:', data.error);
+          }
+        } else {
+          setIsAuthenticated(true);
+        }
       } catch (error) {
         console.error('Error:', error);
       }
     };
-    checkAuthentication();
+    authenticateUser();
   }, []);
-
+  
   return (
     <NavigationContainer>
       {isAuthenticated ? (
