@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     alignItems: 'center',
+    height: '100%',
   },
   sobre:{
     flexDirection: 'row',
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
 
   },
   cadastroButton: {
-    marginTop: 200,
+    marginTop: '55%',
   },
 })
 

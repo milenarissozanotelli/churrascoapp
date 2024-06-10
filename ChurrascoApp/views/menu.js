@@ -15,7 +15,7 @@ const Menu = ({navigation}) => {
                 <Button color={'#870517'} title="Calcular" onPress={() => navigation.navigate('Informar Pessoas')} />
             </View>
             <View style = {styles.button}>
-                <Button color={'#870517'} title="Listas Salvas" onPress={() => navigation.navigate('ListasSalvas')} />
+                <Button color={'#870517'} title="Listas Salvas" onPress={() => navigation.navigate('Listas Salvas')} />
             </View>   
             <View style = {styles.logoutButton}>
                 <Button color={'#870517'} title="Sair" onPress={handleLogout} />
