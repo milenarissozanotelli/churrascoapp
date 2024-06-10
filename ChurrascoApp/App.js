@@ -21,9 +21,12 @@ export default function App() {
       try {
         const storedToken = await SecureStore.getItemAsync('token');
         setIsAuthenticated(!!storedToken);
+
+        fetch('http://localhost:8081/api/rota')
+          .then(response => response.json())
+          .then(data => console.log(data));
       } catch (error) {
-        console.error('Error retrieving token:', error);
-        // Handle error appropriately, e.g., redirect to login screen
+        console.error('Error:', error);
       }
     };
     checkAuthentication();
