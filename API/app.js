@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const db_mongoose = require('./config/db_mongoose');
 const routes = require('./routers/route');
 const bodyParser = require('body-parser');
-const authMiddleware = require('./config/authMiddleware');
+require('dotenv').config();
 
 const app = express();
 
@@ -15,12 +15,9 @@ mongoose.connect(db_mongoose.connection, { useNewUrlParser: true, useUnifiedTopo
   .then(() => {
     console.log('Database Connected Successfully');
   })
-  .catch(() => {
-    console.log('Erro de conexão com o banco de dados');
+  .catch((err) => {
+    console.error('Erro de conexão com o banco de dados:', err);
   });
-
-// Use authMiddleware on protected routes
-app.use('/list', authMiddleware);
 
 app.use(routes);
 

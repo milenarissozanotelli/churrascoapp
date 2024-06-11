@@ -1,21 +1,18 @@
 const jwt = require('jsonwebtoken');
-const secretKey = 'your_secret_key'; // Substitua por uma chave secreta adequada e mantenha-a segura
+const User = require('../models/userModel');
+require('dotenv').config();
 
-const authMiddleware = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
+module.exports = (req, res, next) => {
+  const token = req.header('Authorization').replace('Bearer ', '');
   if (!token) {
-    return res.sendStatus(401); // Unauthorized
-  }
-
-  jwt.verify(token, secretKey, (err, user) => {
-    if (err) {
-      return res.sendStatus(403); // Forbidden
+    return res.status(401).send({ error: 'Access denied, token missing!' });
+  } else {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = decoded;
+      next();
+    } catch (err) {
+      res.status(400).send({ error: 'Invalid token' });
     }
-    req.user = user;
-    next();
-  });
+  }
 };
-
-module.exports = authMiddleware;
