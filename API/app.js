@@ -43,7 +43,7 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Rota de registro (opcional, para criar usuários durante o desenvolvimento)
+// Rota de registro
 app.post('/register', async (req, res) => {
   const { fullName, email, password } = req.body;
 

@@ -1,5 +1,5 @@
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, Button, Image, TextInput, Alert } from 'react-native';
-import { useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SobreButton from '../components/sobreButton';
 
@@ -9,7 +9,7 @@ const Login = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://192.168.1.182:8080/login', {
+      const response = await fetch('http://192.168.3.8:8080/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ const Login = ({ navigation }) => {
         placeholder="Digite seu Email"
         onChangeText={setEmail}
         value={email}
-        autoCapitalize='none'
+        autoCapitalize="none"
       />
       <TextInput
         style={styles.textinput}
@@ -52,7 +52,7 @@ const Login = ({ navigation }) => {
         onChangeText={setPassword}
         value={password}
         secureTextEntry={true}
-        autoCapitalize='none'
+        autoCapitalize="none"
       />
       <View style={styles.loginbutton}>
         <Button color={'#870517'} title="Login" onPress={handleLogin} />

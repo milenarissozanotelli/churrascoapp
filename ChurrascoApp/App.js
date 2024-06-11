@@ -22,6 +22,7 @@ export default function App() {
     const checkToken = async () => {
       try {
         const token = await AsyncStorage.getItem('userToken');
+
         if (token) {
           const response = await fetch('http://192.168.1.182:8080/verifyToken', {
             method: 'POST',
