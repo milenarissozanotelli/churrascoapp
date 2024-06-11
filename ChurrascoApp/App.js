@@ -16,8 +16,9 @@ const Stack = createStackNavigator();
 export default function App() {
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   useEffect(() => {
-    const authenticateUser = async () => {
+    const authenticateUser = async (username, password) => {
       try {
         const storedToken = await SecureStore.getItemAsync('token');
         if (!storedToken) {
@@ -27,27 +28,28 @@ export default function App() {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              username: 'your_username',
-              password: 'your_password',
+              username: username,
+              password: password,
             }),
           });
   
-          const data = await response.json();
-  
-          if (data.token) {
-            await SecureStore.setItemAsync('token', data.token);
+          if (response.ok) {
+            const { token } = await response.json();
+            await SecureStore.setItemAsync('token', token);
             setIsAuthenticated(true);
           } else {
-            console.error('Error:', data.error);
+            setIsAuthenticated(false);
           }
         } else {
           setIsAuthenticated(true);
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.error(error);
+        setIsAuthenticated(false);
       }
     };
-    authenticateUser();
+  
+    authenticateUser('your_username', 'your_password');
   }, []);
   
   return (
