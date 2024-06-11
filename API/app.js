@@ -11,15 +11,16 @@ app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-mongoose.connect(db_mongoose.connection).then(() => {
-    console.log('Conectado');
-}).catch(() => {
+mongoose.connect(db_mongoose.connection, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log('Database Connected Successfully');
+  })
+  .catch(() => {
     console.log('Erro de conexão com o banco de dados');
-});
-
+  });
 
 app.use(routes);
 
 app.listen(8081, function(){
-    console.log("Servidor rodando na url http://localhost:8081");
+  console.log("Servidor rodando na url http://localhost:8081");
 });
