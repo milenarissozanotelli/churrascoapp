@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import * as SecureStore from 'expo-secure-store';
-import Login from './views/Login';
-import Cadastro from './views/Cadastro';
-import Menu from './views/Menu';
-import InformarPessoas from './views/InformarPessoas';
-import ListasSalvas from './views/ListasSalvas';
-import Sobre from './views/Sobre';
-import CalculoFinal from './views/CalculoFinal';
+import { View, ActivityIndicator, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Login from './views/login';
+import Cadastro from './views/cadastro';
+import Menu from './views/menu';
+import InformarPessoas from './views/informarpessoas';
+import ListasSalvas from './views/listassalvas';
+import Sobre from './views/sobrenos';
+import CalculoFinal from './views/calculofinal';
 import useLoginControl from './LoginControl';
 
 const Stack = createStackNavigator();
@@ -20,10 +21,9 @@ export default function App() {
   useEffect(() => {
     const checkToken = async () => {
       try {
-        const token = await SecureStore.getItemAsync('userToken');
-
+        const token = await AsyncStorage.getItem('userToken');
         if (token) {
-          const response = await fetch('https://myapi.com/verifyToken', {
+          const response = await fetch('http://192.168.1.182:8080/verifyToken', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -48,22 +48,22 @@ export default function App() {
   }, [setIsAuthenticated]);
 
   const handleInvalidToken = async () => {
-    await SecureStore.deleteItemAsync('userToken');
-    await SecureStore.deleteItemAsync('refreshToken');
+    await AsyncStorage.removeItem('userToken');
+    await AsyncStorage.removeItem('refreshToken');
     setIsAuthenticated(false);
   };
 
   const handleLogout = async () => {
-    await SecureStore.deleteItemAsync('userToken');
-    await SecureStore.deleteItemAsync('refreshToken');
+    await AsyncStorage.removeItem('userToken');
+    await AsyncStorage.removeItem('refreshToken');
     setIsAuthenticated(false);
   };
 
   const handleRefreshToken = async () => {
     try {
-      const refreshToken = await SecureStore.getItemAsync('refreshToken');
+      const refreshToken = await AsyncStorage.getItem('refreshToken');
       if (refreshToken) {
-        const response = await fetch('https://myapi.com/refreshToken', {
+        const response = await fetch('http://192.168.1.182:8080/refreshToken', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ export default function App() {
 
         if (response.ok) {
           const { newToken } = await response.json();
-          await SecureStore.setItemAsync('userToken', newToken);
+          await AsyncStorage.setItem('userToken', newToken);
           setIsAuthenticated(true);
         } else {
           await handleInvalidToken();
@@ -99,7 +99,9 @@ export default function App() {
 
   if (loading) {
     return (
-      <div>Loading...</div>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
     );
   }
 
@@ -123,7 +125,7 @@ export default function App() {
                   setUsername={setUsername}
                   setPassword={setPassword}
                   attemptAuthentication={attemptAuthentication}
-                  onLoginFailed={() => alert('Login failed. Please try again.')}
+                  onLoginFailed={() => Alert.alert('Login failed. Please try again.')}
                 />
               )}
             </Stack.Screen>
