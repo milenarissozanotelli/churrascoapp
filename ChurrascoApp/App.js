@@ -1,29 +1,29 @@
-import { StatusBar } from 'expo-status-bar';
-import React, { useState, useEffect } from 'react';
-import * as SecureStore from 'expo-secure-store';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import Login from './views/login';
-import Menu from './views/menu';
-import Cadastro from './views/cadastro';
-import InformarPessoas from './views/informarpessoas';
-import ListasSalvas from './views/listassalvas';
-import Sobre from './views/sobrenos';
-import CalculoFinal from './views/calculofinal';
+import Login from './views/Login';
+import Cadastro from './views/Cadastro';
+import Menu from './views/Menu';
+import InformarPessoas from './views/InformarPessoas';
+import ListasSalvas from './views/ListasSalvas';
+import Sobre from './views/Sobre';
+import CalculoFinal from './views/CalculoFinal';
+import useLoginControl from './LoginControl';
 
 const Stack = createStackNavigator();
 
 export default function App() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { isAuthenticated, setUsername, setPassword } = useLoginControl();
+  const [username, setUsernameState] = useState('');
+  const [password, setPasswordState] = useState('');
 
   useEffect(() => {
     const authenticateUser = async () => {
       try {
-        const storedToken = await SecureStore.getItemAsync('token');
-        if (!storedToken) {
-          const response = await fetch('http://localhost:8081/login', {
+        const token = await SecureStore.getItemAsync('token');
+
+        if (!token) {
+          const response = await fetch('https://myapi.com/authenticate', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -66,8 +66,12 @@ export default function App() {
           </>
         ) : (
           <>
-            <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="Cadastro" component={Cadastro} />
+            <Stack.Screen name="Login">
+              {props => <Login {...props} setUsername={setUsername} setPassword={setPassword} />}
+            </Stack.Screen>
+            <Stack.Screen name="Cadastro">
+              {props => <Cadastro {...props} setUsername={setUsername} setPassword={setPassword} />}
+            </Stack.Screen>
           </>
         )}
       </Stack.Navigator>
