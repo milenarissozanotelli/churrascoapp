@@ -1,24 +1,25 @@
 import { StatusBar } from 'expo-status-bar';
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import Login from './views/login';
 import Menu from './views/menu';
 import Cadastro from './views/cadastro';
 import InformarPessoas from './views/informarpessoas';
 import ListasSalvas from './views/listassalvas';
 import Sobre from './views/sobrenos';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
 import CalculoFinal from './views/calculofinal';
 
 const Stack = createStackNavigator();
 
 export default function App() {
-
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const authenticateUser = async (username, password) => {
+    const authenticateUser = async () => {
       try {
         const storedToken = await SecureStore.getItemAsync('token');
         if (!storedToken) {
@@ -32,7 +33,7 @@ export default function App() {
               password: password,
             }),
           });
-  
+
           if (response.ok) {
             const { token } = await response.json();
             await SecureStore.setItemAsync('token', token);
@@ -48,29 +49,28 @@ export default function App() {
         setIsAuthenticated(false);
       }
     };
-  
-    authenticateUser('your_username', 'your_password');
-  }, []);
-  
+
+    authenticateUser();
+  }, [username, password]);
+
   return (
     <NavigationContainer>
-      {isAuthenticated ? (
-        <Stack.Navigator initialRouteName="Menu">
-          <Stack.Screen name="Menu" component={Menu} />
-
-        </Stack.Navigator>
-      ) : (
-        <Stack.Navigator initialRouteName="Login">
-          <Stack.Screen name="Login" component={Login} />
-          <Stack.Screen name="Cadastro" component={Cadastro} />
-          <Stack.Screen name="Sobre Nós" component={Sobre} />
-          <Stack.Screen name="Menu" component={Menu} />
-          <Stack.Screen name="Informar Pessoas" component={InformarPessoas} />
-          <Stack.Screen name="Listas Salvas" component={ListasSalvas} />
-          <Stack.Screen name="Cálculo Final" component={CalculoFinal} />
-        </Stack.Navigator>
-      )}
-      <StatusBar style="auto" />
+      <Stack.Navigator>
+        {isAuthenticated ? (
+          <>
+            <Stack.Screen name="Menu" component={Menu} />
+            <Stack.Screen name="InformarPessoas" component={InformarPessoas} />
+            <Stack.Screen name="ListasSalvas" component={ListasSalvas} />
+            <Stack.Screen name="Sobre" component={Sobre} />
+            <Stack.Screen name="CalculoFinal" component={CalculoFinal} />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="Cadastro" component={Cadastro} />
+          </>
+        )}
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }
