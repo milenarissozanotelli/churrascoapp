@@ -3,11 +3,11 @@ const mongoose = require('mongoose');
 const db_mongoose = require('./config/db_mongoose');
 const routes = require('./routers/route');
 const bodyParser = require('body-parser');
+const authMiddleware = require('./config/authMiddleware');
 
 const app = express();
 
 app.use(bodyParser.json());
-
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -18,6 +18,9 @@ mongoose.connect(db_mongoose.connection, { useNewUrlParser: true, useUnifiedTopo
   .catch(() => {
     console.log('Erro de conexão com o banco de dados');
   });
+
+// Use authMiddleware on protected routes
+app.use('/list', authMiddleware);
 
 app.use(routes);
 

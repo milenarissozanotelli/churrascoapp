@@ -1,47 +1,68 @@
-// LoginControl.js
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import * as SecureStore from 'expo-secure-store';
 
-export default function useLoginControl() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+const useLoginControl = () => {
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [shouldAuthenticate, setShouldAuthenticate] = useState(false);
+    const isMounted = useRef(true);
 
-  useEffect(() => {
+    useEffect(() => {
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
+
     const authenticateUser = async () => {
-      try {
-        const token = await SecureStore.getItemAsync('token');
+        try {
+            const response = await fetch('https://myapi.com/authenticate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
 
-        if (!token) {
-          const response = await fetch('https://myapi.com/authenticate', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              username: username,
-              password: password,
-            }),
-          });
+            if (response.ok) {
+                const data = await response.json();
+                
+                if (data.token && data.refreshToken) {
+                    await SecureStore.setItemAsync('userToken', data.token);
+                    await SecureStore.setItemAsync('refreshToken', data.refreshToken);
+                }
 
-          if (response.ok) {
-            const { token } = await response.json();
-            await SecureStore.setItemAsync('token', token);
-            setIsAuthenticated(true);
-          } else {
-            setIsAuthenticated(false);
-          }
-        } else {
-          setIsAuthenticated(true);
+                if (isMounted.current) {
+                    setIsAuthenticated(true);
+                }
+            } else {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Authentication failed');
+            }
+        } catch (error) {
+            console.error('Authentication error:', error);
+            if (isMounted.current) {
+                alert(error.message);
+                setIsAuthenticated(false);
+            }
         }
-      } catch (error) {
-        console.error(error);
-        setIsAuthenticated(false);
-      }
+
+        if (isMounted.current) {
+            setShouldAuthenticate(false);
+        }
     };
 
-    authenticateUser();
-  }, [username, password]);
+    useEffect(() => {
+        if (shouldAuthenticate) {
+            authenticateUser();
+        }
+    }, [shouldAuthenticate]);
 
-  return { isAuthenticated, setUsername, setPassword };
-}
+    const attemptAuthentication = () => {
+        setShouldAuthenticate(true);
+    };
+
+    return { isAuthenticated, setUsername, setPassword, attemptAuthentication, setIsAuthenticated };
+};
+
+export default useLoginControl;
