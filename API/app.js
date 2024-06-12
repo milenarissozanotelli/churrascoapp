@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
 const User = require('./models/userModel.js');
+const route = require('./routers/route.js')
 
 dotenv.config();
 
@@ -58,6 +59,8 @@ app.post('/register', async (req, res) => {
   }
 });
 
+// Usar rotas
+app.use('/api', route);
 
 app.listen(port, () => {
   console.log(`Servidor rodando na url http://localhost:${port}`);
