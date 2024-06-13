@@ -34,6 +34,9 @@ export default function App() {
       {isAuthenticated ? (
         <Stack.Navigator initialRouteName="Menu">
           <Stack.Screen name="Menu" component={Menu} />
+          <Stack.Screen name="Informar Pessoas" component={InformarPessoas} />
+          <Stack.Screen name="Listas Salvas" component={ListasSalvas} />
+          <Stack.Screen name="Cálculo Final" component={CalculoFinal} />
 
         </Stack.Navigator>
       ) : (
