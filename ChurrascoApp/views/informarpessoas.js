@@ -1,30 +1,72 @@
-import { useState } from 'react';
-import {Text, Image, Button, View, StyleSheet, TextInput} from 'react-native';
+import { useState, useEffect} from 'react';
+import {Text, Image, Button, View, StyleSheet, TextInput, ScrollView, BackHandler} from 'react-native';
+import * as SecureStore from 'expo-secure-store';
 
 const InformarPessoas = ({navigation}) => {
     
-    const [homens, setHomens] = useState('');
-    const [mulheres, setMulheres] = useState('');
-    const [criancas, setCriancas] = useState('');
+    const [homens, setHomens] = useState('0');
+    const [mulheres, setMulheres] = useState('0');
+    const [criancas, setCriancas] = useState('0');
 
-    const handleCalcular = () => {
+    const handleCalcular = async () => {
+      const homensValue = homens === '' ? '0' : homens;
+      const mulheresValue = mulheres === '' ? '0' : mulheres;
+      const criancasValue = criancas === '' ? '0' : criancas;
+      await SecureStore.setItemAsync('homens', homensValue);
+      await SecureStore.setItemAsync('mulheres', mulheresValue);
+      await SecureStore.setItemAsync('criancas', criancasValue);
       navigation.navigate("Cálculo Final");
     }
 
+    useEffect(() => {
+      const backAction = () => {
+        navigation.navigate('Menu'); 
+        return true;
+      };
+  
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        backAction
+      );
+  
+      return () => backHandler.remove();
+    }, []);
+
     return (
-        <View style={styles.container} >
-            <Image source={require('../assets/logo.png')} style = {styles.image}></Image>
-            <Text style={styles.text}>Informe a quantidade de pessoas para realizar o cálculo:</Text>
-            <Text style={styles.label}>Mulheres</Text>
-            <TextInput style ={styles.textinput}  keyboardType="numeric" onChange={setMulheres} value={mulheres}></TextInput>
-            <Text style={styles.label}>Homens</Text>
-            <TextInput style ={styles.textinput}  keyboardType="numeric" onChange={setHomens} value={homens}></TextInput>
-            <Text style={styles.label}>Crianças</Text>
-            <TextInput style ={styles.textinput}  keyboardType="numeric" onChange={setCriancas} value={criancas}></TextInput>
-            <View style = {styles.calcularButton}>
-                <Button color={'#870517'} title="Calcular" onPress={handleCalcular} />
+      <ScrollView>
+            <View style={styles.container}>
+                <Image source={require('../assets/logo.png')} style={styles.image} />
+                <Text style={styles.text}>Informe a quantidade de pessoas para realizar o cálculo:</Text>
+
+                <Text style={styles.label}>Mulheres</Text>
+                <TextInput
+                    style={styles.textinput}
+                    keyboardType="numeric"
+                    onChangeText={text => setMulheres(text)} 
+                    value={mulheres} 
+                />
+
+                <Text style={styles.label}>Homens</Text>
+                <TextInput
+                    style={styles.textinput}
+                    keyboardType="numeric"
+                    onChangeText={text => setHomens(text)}
+                    value={homens}
+                />
+
+                <Text style={styles.label}>Crianças</Text>
+                <TextInput
+                    style={styles.textinput}
+                    keyboardType="numeric"
+                    onChangeText={text => setCriancas(text)}
+                    value={criancas}
+                />
+
+                <View style={styles.calcularButton}>
+                    <Button color={'#870517'} title="Calcular" onPress={handleCalcular} />
+                </View>
             </View>
-        </View>
+        </ScrollView>
     );
 };
 

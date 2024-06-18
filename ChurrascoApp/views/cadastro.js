@@ -1,19 +1,53 @@
-import { StyleSheet, Text, View, Image, TextInput, Button} from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, Button, ScrollView, Alert} from 'react-native';
 import {useState} from 'react';
 
 const Cadastro = ({navigation}) => {
 
-    const handleCadastro = () => {
-        // Implementar a lógica de cadastro
-        navigation.navigate('Login')
-    };
+    
     const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
 
+    const handleCadastro = async (e) => {
+      e.preventDefault();
+      if (password !== passwordConfirmation){
+        alert('As senhas não conferem');
+        return;
+      }
+      try{
+        const response = await fetch('https://apichurrascoapp.onrender.com/user', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ fullName: nome, email, password }),
+        });
+   
+        const contentType = response.headers.get('content-type');
+        let data;
+        
+        if (contentType && contentType.indexOf('application/json') !== -1) {
+          data = await response.json();
+        } else {
+          data = await response.text();
+        }
+   
+        if (response.ok){
+          Alert.alert('Cadastro realizado com sucesso!');
+          navigation.navigate('Login');
+        } else {
+          Alert.alert(data.message || data);
+        }
+      }catch(error){
+        console.error('Network error:', error);
+        Alert.alert('Network error, please try again later');
+      }
+    }
+
     return (
-        <View style={styles.container} >
+        <ScrollView>
+          <View style = {styles.container}>
             <Image source={require('../assets/logo.png')} style = {styles.image}></Image>
             <Text style={styles.text}>Para se cadastrar, informe os dados a seguir:</Text>
             <Text style={styles.label}>Nome</Text>
@@ -27,8 +61,8 @@ const Cadastro = ({navigation}) => {
             <View style = {styles.cadastroButton}>
                 <Button color={'#870517'} title="Cadastrar" onPress={handleCadastro} />
             </View>
-        
-        </View>
+          </View>
+        </ScrollView>
     );
 }
 
