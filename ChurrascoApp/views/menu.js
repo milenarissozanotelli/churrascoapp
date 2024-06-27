@@ -1,10 +1,32 @@
-import {Text, Image, Button, View, StyleSheet} from 'react-native';
+import {Text, Image, Button, View, StyleSheet, BackHandler} from 'react-native';
+import * as SecureStore from 'expo-secure-store';
+import { useEffect } from 'react';
 
 const Menu = ({navigation}) => {
 
-    const handleLogout = () => {
-        navigation.navigate('Login');
+    const handleLogout = async () => {
+        try{
+            await SecureStore.deleteItemAsync('id');
+            navigation.navigate('Login');  
+        } catch (error) {
+            console.error('Failed to reload the app:', error);
+        }
     };
+
+    useEffect(() => {
+        const backAction = () => {
+          navigation.navigate('Menu');
+          return true;
+        };
+    
+        const backHandler = BackHandler.addEventListener(
+          "hardwareBackPress",
+          backAction
+        );
+    
+        return () => backHandler.remove();
+      }, []);
+
     return (
         <View style={styles.container}>
             <Image source={require('../assets/logo.png')} style = {styles.image}></Image>

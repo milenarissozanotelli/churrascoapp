@@ -1,6 +1,9 @@
-import { Button, StyleSheet, Text, View, TextInput, ScrollView, BackHandler} from 'react-native';
-import { useState, useEffect } from 'react';
+import { Button, StyleSheet, Text, View, ScrollView, BackHandler} from 'react-native';
+import { useState, useEffect, useCallback } from 'react';
 import * as SecureStore from 'expo-secure-store';
+import { useFocusEffect } from '@react-navigation/native';
+
+//de onde pegar os dados, mudar textinput para nome lista, trocar salvar por deletar, listId secureStore
 
 // Quantidades por pessoa
 const CARNE_POR_PESSOA = 0.5; // em kilogramas
@@ -36,7 +39,7 @@ const calcularChurrasco = (numHomens, numMulheres, numCriancas) => {
         carvao: carvao
     };
 };
-export default function CalculoFinal({navigation}) {
+export default function ExibirLista({navigation}) {
 
     const [nome, setNome] = useState('');
 
@@ -52,26 +55,8 @@ export default function CalculoFinal({navigation}) {
     });
 
     useEffect(() => {
-        const getPessoas = async () => {
-            try {
-                const numHomens = await SecureStore.getItemAsync('homens');
-                const numMulheres = await SecureStore.getItemAsync('mulheres');
-                const numCriancas = await SecureStore.getItemAsync('criancas');
-
-                const resultadosCalculados = calcularChurrasco(numHomens, numMulheres, numCriancas);
-                setResultados(resultadosCalculados);
-            } catch (error) {
-                console.error('Erro ao obter dados do SecureStore:', error);
-                alert('Erro ao obter dados do SecureStore. Tente novamente.');
-            }
-        };
-
-        getPessoas();
-    }, []);
-
-    useEffect(() => {
         const backAction = () => {
-          navigation.navigate('Informar Pessoas');  // Substitua 'Specific' pela tela específica desejada
+          navigation.navigate('Listas Salvas');  // Substitua 'Specific' pela tela específica desejada
           return true;
         };
     
@@ -83,40 +68,64 @@ export default function CalculoFinal({navigation}) {
         return () => backHandler.remove();
       }, []);
 
-    const handleSalvar = async(e) => {
+
+    const getPessoas = async () => {
+        try {
+            const numHomens = await SecureStore.getItemAsync('homens');
+            const numMulheres = await SecureStore.getItemAsync('mulheres');
+            const numCriancas = await SecureStore.getItemAsync('criancas');
+
+            const resultadosCalculados = calcularChurrasco(numHomens, numMulheres, numCriancas);
+            setResultados(resultadosCalculados);
+        } catch (error) {
+            console.error('Erro ao obter dados do SecureStore:', error);
+            alert('Erro ao obter dados do SecureStore. Tente novamente.');
+        }
+    };
+
+    const getTitleAndPessoas = async () => {
+        try {
+            const listTitle = await SecureStore.getItemAsync('listTitle');
+            setNome(listTitle);
+            await getPessoas();
+        } catch (error) {
+            console.error('Erro ao obter o título da lista do SecureStore:', error);
+            alert('Erro ao obter o título da lista do SecureStore. Tente novamente.');
+        }
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+          getTitleAndPessoas();
+        }, [])
+      );
+
+    const handleDeletar = async(e) => {
         e.preventDefault();
-        const userId = await SecureStore.getItemAsync('id');
-        const numHomens = await SecureStore.getItemAsync('homens');
-        const numMulheres = await SecureStore.getItemAsync('mulheres');
-        const numCriancas = await SecureStore.getItemAsync('criancas');
         try{
-            const response = await fetch('https://apichurrascoapp.onrender.com/list', {
-                method: 'POST',
+            const listId = await SecureStore.getItemAsync('listId');
+            const response = await fetch(`https://apichurrascoapp.onrender.com/list/${listId}`, {
+                method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ title:nome, userId, people: [{man: numHomens, woman: numMulheres, children: numCriancas}] }),
             });
-            const data = await response.json();
             if (response.ok){
-                await SecureStore.setItemAsync('listTitle', data.title);
-                await SecureStore.setItemAsync('listId', data._id);
-                alert('Lista salva com sucesso!');
-                navigation.navigate('Exibir Lista');
+                alert('Lista excluída com sucesso!');
+                navigation.navigate('Listas Salvas');
             } else {
-                alert(data.message || data);
+                alert('Erro ao excluir lista. Tente novamente.');
             }
-        }
-        catch(error){
-            console.error('Network error:', error);
-            Alert.alert('Network error, please try again later');
+        } catch (error){
+            console.error('Erro ao excluir lista:', error);
+            alert('Erro ao excluir lista. Tente novamente.');
         }
     };
 
     return (
         <ScrollView>
         <View style={styles.container}>
-            <TextInput style ={styles.textinput} placeholder="De um nome a sua lista:" onChangeText={setNome} value={nome}></TextInput>
+            <Text style={styles.title}>{nome}</Text>
             <Text style={styles.title}>Resultado do Churrasco:</Text>
             <View style={styles.textContainer}>
                 <Text style={styles.text}>Carne: {resultados.carne} kg</Text>
@@ -129,7 +138,7 @@ export default function CalculoFinal({navigation}) {
                 <Text style={styles.text}>Carvão: {resultados.carvao} kg</Text>
             </View>
             <View style={styles.button}>
-                <Button color={'#870517'} title="Salvar" onPress={handleSalvar} />
+                <Button color={'#870517'} title="Excluir Lista" onPress={handleDeletar} />
             </View>
         </View>
         </ScrollView>

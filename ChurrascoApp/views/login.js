@@ -1,16 +1,40 @@
-import { StyleSheet, Text, View, Button, Image, TextInput} from 'react-native';
+import { StyleSheet, Text, View, Button, Image, TextInput, Alert} from 'react-native';
 import {useState} from 'react';
 import SobreButton from '../components/sobreButton';
+import * as SecureStore from 'expo-secure-store';
 
 const Login = ({navigation}) => {
   
-  const handleLogin = () => {
-    // Implementar a lógica de login
-    navigation.navigate('Menu')
-  }
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const handleLogin = async(e) => {
+    e.preventDefault();
+    try{
+      const response = await fetch('https://apichurrascoapp.onrender.com/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await response.json();
+      if (response.ok){
+        await SecureStore.setItemAsync('id', data._id);
+        result = await SecureStore.getItemAsync('id');
+        console.log(result);
+        setEmail('');
+        setPassword('');
+        navigation.navigate('Menu');
+      } else {
+        Alert.alert('Email ou senha incorretos');
+      }
+    }catch(error){
+      console.log(error);
+    }
+  }
+  
   
   return (
     <View style = {styles.container}>
