@@ -1,5 +1,7 @@
+require('dotenv').config();
+
 const StringCon = {
-    connection: "mongodb+srv://gcasagranda:admin1234@cluster0.ozwxls3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster"
+    connection: process.env.MONGODB_URI
 }
 
 module.exports = StringCon;
